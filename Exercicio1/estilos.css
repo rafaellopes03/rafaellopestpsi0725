@@ -7,8 +7,10 @@ body {
     background-image: url("images/background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     line-height: 1.6;
+    min-height: 100%;
 }
 
 .places {
@@ -39,10 +41,12 @@ h1 a {
     color: #e9ebe4;
     text-decoration: none;
 }
+
 h1 a:hover {
-    background-color: #AARRGGBB;
+    background-color: #CCCCCC;
     color: #FFF;
 }
+
 .place img {
     --border: 1px solid #7E9F19;
     float: left;
@@ -51,4 +55,9 @@ h1 a:hover {
 }
 .clear {
     clear: both;
+}
+
+footer {
+    color: white;
+    text-align: center;
 }
