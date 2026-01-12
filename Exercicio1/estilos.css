@@ -37,6 +37,10 @@ body {
     font-weight: bold;
 }
 
+h1 {
+    text-align: center;
+}
+
 h1 a {
     color: #e9ebe4;
     text-decoration: none;
