@@ -1,0 +1,54 @@
+.container {
+    margin: 0 auto;
+    width: 660px;
+}
+
+body {
+    background-image: url("images/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+.places {
+    float: center;
+    width: 660px;
+}
+
+.place {
+    background-color: #FFFFFF;
+    border: 1px solid #CCC;
+    border-color: #CCCCCC;
+    margin-bottom: 20px;
+    padding: 10px;
+    float: center;
+}
+
+.place h2 {
+    border-bottom: 3px dashed #5c5c5c;
+    margin: 0;
+}
+
+.place a {
+    color: #2C88A7;
+    font-weight: bold;
+}
+
+h1 a {
+    color: #e9ebe4;
+    text-decoration: none;
+}
+h1 a:hover {
+    background-color: #AARRGGBB;
+    color: #FFF;
+}
+.place img {
+    --border: 1px solid #7E9F19;
+    float: left;
+    margin: 10px 10px 0 0;
+    padding: 2px;
+}
+.clear {
+    clear: both;
+}
