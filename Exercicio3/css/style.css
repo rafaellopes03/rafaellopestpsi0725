@@ -1,0 +1,21 @@
+/*
+.titulo {
+    color: white;
+    background-color: #A7A9AB;
+}
+*/
+.nav {
+    background-color: #F5A934;
+}
+
+.nav a { 
+    color: white;
+}
+
+.btn-saber {
+    color:  blue;
+}
+
+.card {
+    border: 0px;
+}
