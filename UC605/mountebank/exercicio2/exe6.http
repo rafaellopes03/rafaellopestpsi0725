@@ -1,0 +1,358 @@
+# Exe 6 - Gestão de Tarefas (To-Do List)
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4006,
+  "protocol": "http",
+  "name": "API_Tarefas",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/tarefas → lista todas as tarefas → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/tarefas"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"tarefas\": [{\"id\": 1, \"titulo\": \"Comprar material\", \"descricao\": \"Comprar canetas e cadernos\", \"estado\": \"pendente\"}, {\"id\": 2, \"titulo\": \"Reunião semanal\", \"descricao\": \"Reunião com a equipa às 10h\", \"estado\": \"concluida\"}, {\"id\": 3, \"titulo\": \"Enviar relatório\", \"descricao\": \"Enviar relatório mensal ao gestor\", \"estado\": \"pendente\"}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/tarefas/1 → tarefa existe → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/tarefas/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"id\": 1, \"titulo\": \"Comprar material\", \"descricao\": \"Comprar canetas e cadernos\", \"estado\": \"pendente\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/tarefas/999 → tarefa não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/tarefas/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Tarefa não encontrada\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/tarefas → dados válidos com título e descrição → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/tarefas"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"titulo\"\\s*:\\s*\"[^\"]+\".*"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"descricao\"\\s*:\\s*\"[^\"]+\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Tarefa criada com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/tarefas → título vazio → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/tarefas"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"titulo\"\\s*:\\s*\"\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"O título não pode ser vazio\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/tarefas/1 → altera estado para concluida → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/tarefas/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"estado\"\\s*:\\s*\"concluida\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Tarefa atualizada com sucesso\", \"id\": 1, \"estado\": \"concluida\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/tarefas/1 → altera estado para pendente → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/tarefas/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"estado\"\\s*:\\s*\"pendente\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Tarefa atualizada com sucesso\", \"id\": 1, \"estado\": \"pendente\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/tarefas/999 → tarefa não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/tarefas/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Tarefa não encontrada\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/tarefas/2 → tarefa concluída → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/tarefas/2"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Tarefa eliminada com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/tarefas/1 → tarefa ainda pendente → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/tarefas/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível eliminar uma tarefa que ainda não foi concluída\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/tarefas/999 → tarefa não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/tarefas/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Tarefa não encontrada\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/tarefas → lista todas as tarefas
+GET http://localhost:4006/api/tarefas
+
+###
+
+# GET /api/tarefas/{id} → mostra detalhes de uma tarefa
+GET http://localhost:4006/api/tarefas/1
+
+###
+
+# tarefa não existe
+GET http://localhost:4006/api/tarefas/999
+
+###
+
+# TESTES - POST
+
+# POST /api/tarefas → cria nova tarefa
+POST http://localhost:4006/api/tarefas
+Content-Type: application/json
+
+{
+  "titulo": "Atualizar documentação",
+  "descricao": "Atualizar os docs do projeto"
+}
+
+###
+
+# título vazio → 400
+POST http://localhost:4006/api/tarefas
+Content-Type: application/json
+
+{
+  "titulo": "",
+  "descricao": "Descrição sem título"
+}
+
+###
+
+# TESTES - PUT
+
+# PUT /api/tarefas/{id} → altera estado ou descrição
+PUT http://localhost:4006/api/tarefas/1
+Content-Type: application/json
+
+{
+  "estado": "concluida"
+}
+
+###
+
+# PUT altera o estado (pendente/concluída)
+PUT http://localhost:4006/api/tarefas/1
+Content-Type: application/json
+
+{
+  "estado": "pendente"
+}
+
+###
+
+# tarefa não existe → 404
+PUT http://localhost:4006/api/tarefas/999
+Content-Type: application/json
+
+{
+  "estado": "concluida"
+}
+
+###
+
+# TESTES - DELETE
+
+# •	DELETE /api/tarefas/{id} → elimina tarefa
+DELETE http://localhost:4006/api/tarefas/2
+
+###
+
+# tarefa pendente → 400
+DELETE http://localhost:4006/api/tarefas/1
+
+###
+
+# tarefa não existe → 404
+DELETE http://localhost:4006/api/tarefas/999

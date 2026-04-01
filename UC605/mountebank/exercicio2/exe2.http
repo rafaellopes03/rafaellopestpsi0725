@@ -1,0 +1,355 @@
+# Exe 2 - API Gestão de Inventário de Produtos
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4002,
+  "protocol": "http",
+  "name": "API_Produtos",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/produtos → lista todos os produtos → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/produtos"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"produtos\": [{\"id\": 1, \"nome\": \"Teclado\", \"preco\": 29.99, \"quantidade\": 50}, {\"id\": 2, \"nome\": \"Rato\", \"preco\": 15.99, \"quantidade\": 0}, {\"id\": 3, \"nome\": \"Monitor\", \"preco\": 199.99, \"quantidade\": 10}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/produtos/1 → produto existe → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/produtos/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"id\": 1, \"nome\": \"Teclado\", \"preco\": 29.99, \"quantidade\": 50}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/produtos/999 → produto não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/produtos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Produto não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/produtos → dados válidos (nome, preco, quantidade >= 0) → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/produtos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*([0-9]+).*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Produto adicionado com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/produtos → quantidade negativa → 400 Valor inválido",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/produtos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*-[0-9]+.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Valor inválido\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/produtos/1/stock → produto existe, soma stock → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/produtos/1/stock"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*[0-9]+.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Stock atualizado com sucesso\", \"id\": 1, \"quantidade_atual\": 70}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/produtos/1/stock → produto existe, subtrai stock → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/produtos/1/stock"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*-[0-9]+.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Stock atualizado com sucesso\", \"id\": 1, \"quantidade_atual\": 30}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/produtos/999/stock → produto não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/produtos/999/stock"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Produto não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/produtos/2 → stock é zero → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/produtos/2"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Produto removido com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/produtos/1 → stock não é zero → 400 Valor inválido",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/produtos/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível remover um produto com stock disponível\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/produtos/999 → produto não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/produtos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Produto não encontrado\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/produtos → lista todos os produtos
+GET http://localhost:4002/api/produtos
+
+###
+
+# GET /api/produtos/{id} → produto existe
+GET http://localhost:4002/api/produtos/1
+
+###
+
+# GET /api/produtos/{id} → produto não existe
+GET http://localhost:4002/api/produtos/999
+
+###
+
+# TESTES - POST
+
+# POST /api/produtos → adiciona novo produto com dados válidos
+POST http://localhost:4002/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "Headphones",
+  "preco": 49.99,
+  "quantidade": 25
+}
+
+###
+
+# POST /api/produtos → quantidade negativa → 400
+POST http://localhost:4002/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "Headphones",
+  "preco": 49.99,
+  "quantidade": -5
+}
+
+###
+
+# TESTES - PUT
+
+# PUT /api/produtos/{id}/stock → soma stock ao produto existente
+PUT http://localhost:4002/api/produtos/1/stock
+Content-Type: application/json
+
+{
+  "quantidade": 20
+}
+
+###
+
+# PUT /api/produtos/{id}/stock → subtrai stock ao produto existente
+PUT http://localhost:4002/api/produtos/1/stock
+Content-Type: application/json
+
+{
+  "quantidade": -20
+}
+
+###
+
+# PUT /api/produtos/{id}/stock → produto não existe → 404
+PUT http://localhost:4002/api/produtos/999/stock
+Content-Type: application/json
+
+{
+  "quantidade": 10
+}
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/produtos/{id} → produto com stock zero → 200
+DELETE http://localhost:4002/api/produtos/2
+
+###
+
+# DELETE /api/produtos/{id} → produto com stock > 0 → 400
+DELETE http://localhost:4002/api/produtos/1
+
+###
+
+# DELETE /api/produtos/{id} → produto não existe → 404
+DELETE http://localhost:4002/api/produtos/999

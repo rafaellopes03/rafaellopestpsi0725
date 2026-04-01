@@ -1,0 +1,476 @@
+# Criar imposter
+POST http://localhost:2525/imposters
+
+{
+  "port": 4546,
+  "protocol": "http",
+  "name": "API_Exercicios",
+  "stubs": [
+
+    // Exercício 1
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/marcas"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"marcas\": [\"Toyota\", \"Audi\", \"Ford\", \"Volvo\", \"Honda\"]}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 2
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/cars",
+            "query": {
+              "brand": "Toyota"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"brand\": \"Toyota\", \"results\": [{\"id\": 1, \"modelo\": \"Corolla\", \"preco\": 25000}, {\"id\": 2, \"modelo\": \"Yaris\", \"preco\": 18000}]}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 3
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/cars"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"results\": []}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 4
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/login",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "deepEquals": {
+            "body": {
+              "username": "admin",
+              "password": "secret"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"status\": \"ok\", \"token\": \"validtoken\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 5
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/login",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 401,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"invalid_credentials\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 6
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/users",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "contains": {
+            "body": "\"email\":\"exists@example.com\""
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 409,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"email_exists\", \"message\": \"O email já está registado no sistema.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 7
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/users",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": {
+              "Content-Type": "application/json",
+              "Location": "/api/users/42"
+            },
+            "body": "{\"id\": 42, \"status\": \"created\", \"message\": \"Utilizador criado com sucesso.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 8
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/temperature",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "not": {
+            "contains": {
+              "body": "value"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"missing_field\", \"message\": \"O campo 'value' é obrigatório.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 9
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/temperature",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "contains": {
+            "body": "value"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"status\": \"created\", \"message\": \"Medição registada com sucesso.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 10
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/tasks",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "contains": {
+            "body": "\"title\":\"duplicate\""
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 409,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"duplicate_task\", \"message\": \"Já existe uma tarefa com este título.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 11
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/tasks",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": {
+              "Content-Type": "application/json",
+              "Location": "/api/tasks/99"
+            },
+            "body": "{\"id\": 99, \"status\": \"created\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 12 (credenciais certas)
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/auth",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        },
+        {
+          "deepEquals": {
+            "body": {
+              "username": "user1",
+              "password": "pass1"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"token\": \"authtoken123\", \"expires_in\": 3600}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 12 (credenciais erradas)
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/auth",
+            "headers": {
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 401,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"invalid_credentials\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 13 (com token)
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/profile",
+            "headers": {
+              "Authorization": "Bearer validtoken"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"username\": \"admin\", \"email\": \"admin@example.com\", \"role\": \"administrator\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 13 (sem token)
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/profile"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 403,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"forbidden\", \"message\": \"Token inválido ou ausente.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 14
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 415,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"unsupported_media_type\", \"message\": \"O header Content-Type: application/json é obrigatório.\"}"
+          }
+        }
+      ]
+    },
+
+    // Exercício 15
+    {
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{\"error\": \"not_found\", \"message\": \"O recurso solicitado não existe.\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}

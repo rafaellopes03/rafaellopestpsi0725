@@ -1,0 +1,350 @@
+# Exe 3 - API Controlo de Reservas de Hotel
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4003,
+  "protocol": "http",
+  "name": "API_Reservas",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/reservas → lista todas as reservas → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/reservas"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"reservas\": [{\"id\": 1, \"cliente\": \"João Silva\", \"checkin\": \"2025-06-10\", \"checkout\": \"2025-06-15\", \"tipo_quarto\": \"duplo\"}, {\"id\": 2, \"cliente\": \"Ana Costa\", \"checkin\": \"2025-06-20\", \"checkout\": \"2025-06-22\", \"tipo_quarto\": \"suite\"}, {\"id\": 3, \"cliente\": \"Carlos Mendes\", \"checkin\": \"2025-05-01\", \"checkout\": \"2025-05-03\", \"tipo_quarto\": \"simples\"}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/reservas → dados válidos, quarto disponível → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/reservas"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"tipo_quarto\"\\s*:\\s*\"duplo\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Reserva criada com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/reservas → checkout anterior ao checkin → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/reservas"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"checkin\"\\s*:\\s*\"2025-07-20\".*\"checkout\"\\s*:\\s*\"2025-07-15\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"A data de checkout não pode ser anterior ao checkin\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/reservas → quarto cheio → 409 Sem disponibilidade",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/reservas"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"tipo_quarto\"\\s*:\\s*\"suite\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 409,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Sem disponibilidade\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/reservas/1 → reserva existe, alteração feita com mais de 24h de antecedência → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/reservas/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"checkin\"\\s*:\\s*\"2025-06-12\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Reserva atualizada com sucesso\", \"id\": 1}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/reservas/1 → alteração com menos de 24h antes do checkin → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/reservas/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"checkin\"\\s*:\\s*\"2025-06-10\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível alterar a reserva com menos de 24h de antecedência\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/reservas/999 → reserva não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/reservas/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Reserva não encontrada\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/reservas/1 → reserva existe e checkin ainda não ocorreu → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/reservas/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Reserva cancelada com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/reservas/3 → checkin já ocorreu → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/reservas/3"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível cancelar uma reserva após o checkin\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/reservas/999 → reserva não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/reservas/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Reserva não encontrada\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/reservas → lista todas as reservas
+GET http://localhost:4003/api/reservas
+
+###
+
+# TESTES - POST
+
+# POST /api/reservas → cria uma nova reserva
+POST http://localhost:4003/api/reservas
+Content-Type: application/json
+
+{
+  "cliente": "Pedro Ferreira",
+  "checkin": "2025-07-10",
+  "checkout": "2025-07-15",
+  "tipo_quarto": "duplo"
+}
+
+###
+
+# checkout anterior ao checkin
+POST http://localhost:4003/api/reservas
+Content-Type: application/json
+
+{
+  "cliente": "Pedro Ferreira",
+  "checkin": "2025-07-20",
+  "checkout": "2025-07-15",
+  "tipo_quarto": "duplo"
+}
+
+###
+
+# quarto cheio
+POST http://localhost:4003/api/reservas
+Content-Type: application/json
+
+{
+  "cliente": "Pedro Ferreira",
+  "checkin": "2025-07-10",
+  "checkout": "2025-07-15",
+  "tipo_quarto": "suite"
+}
+
+###
+
+# TESTES - PUT
+
+# alteração válida com mais de 24h de antecedência
+PUT http://localhost:4003/api/reservas/1
+Content-Type: application/json
+
+{
+  "checkin": "2025-06-12",
+  "checkout": "2025-06-17",
+  "tipo_quarto": "suite"
+}
+
+###
+
+# PUT só é permitido até 24h antes do checkin
+PUT http://localhost:4003/api/reservas/1
+Content-Type: application/json
+
+{
+  "checkin": "2025-06-10",
+  "checkout": "2025-06-15",
+  "tipo_quarto": "duplo"
+}
+
+###
+
+# reserva não existe
+PUT http://localhost:4003/api/reservas/999
+Content-Type: application/json
+
+{
+  "checkin": "2025-07-01",
+  "checkout": "2025-07-05",
+  "tipo_quarto": "simples"
+}
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/reservas/{id} → cancela uma reserva
+DELETE http://localhost:4003/api/reservas/1
+
+###
+
+# checkin já ocorreu
+DELETE http://localhost:4003/api/reservas/3
+
+###
+
+# reserva não existe
+DELETE http://localhost:4003/api/reservas/999

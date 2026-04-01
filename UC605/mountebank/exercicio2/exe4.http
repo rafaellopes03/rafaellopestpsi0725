@@ -1,0 +1,304 @@
+# Exe 4 - Biblioteca Digital
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4004,
+  "protocol": "http",
+  "name": "API_Biblioteca",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/livros → lista todos os livros disponíveis → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/livros"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"livros\": [{\"id\": 1, \"titulo\": \"O Senhor dos Aneis\", \"autor\": \"Tolkien\", \"disponivel\": true}, {\"id\": 2, \"titulo\": \"Duna\", \"autor\": \"Herbert\", \"disponivel\": false}, {\"id\": 3, \"titulo\": \"1984\", \"autor\": \"Orwell\", \"disponivel\": true}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/livros/1 → livro existe e está disponível → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/livros/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"id\": 1, \"titulo\": \"O Senhor dos Aneis\", \"autor\": \"Tolkien\", \"disponivel\": true}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/livros/999 → livro não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/livros/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Livro não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/emprestimos → dados válidos, livro disponível → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/emprestimos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"livro_id\"\\s*:\\s*1.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Empréstimo registado com sucesso\", \"id\": 10}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/emprestimos → livro já emprestado → 409",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/emprestimos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"livro_id\"\\s*:\\s*2.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 409,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Livro já se encontra emprestado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/emprestimos/10/devolucao → empréstimo existe, marca livro como devolvido → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/emprestimos/10/devolucao"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Livro devolvido com sucesso\", \"id\": 10}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/emprestimos/999/devolucao → empréstimo não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/emprestimos/999/devolucao"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Empréstimo não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/livros/3 → livro existe e não está emprestado → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/livros/3"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Livro removido do catálogo com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/livros/2 → livro está emprestado → 409",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/livros/2"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 409,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível remover um livro que está emprestado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/livros/999 → livro não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/livros/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Livro não encontrado\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/livros → lista livros disponíveis
+GET http://localhost:4004/api/livros
+
+###
+
+# GET /api/livros/{id} → mostra detalhes de um livro
+GET http://localhost:4004/api/livros/1
+
+###
+
+# livro não existe
+GET http://localhost:4004/api/livros/999
+
+###
+
+# TESTES - POST
+
+# POST /api/emprestimos → regista novo empréstimo
+POST http://localhost:4004/api/emprestimos
+Content-Type: application/json
+
+{
+  "cliente": "João Silva",
+  "livro_id": 1,
+  "data_emprestimo": "2025-06-01"
+}
+
+###
+
+# livro já emprestado
+POST http://localhost:4004/api/emprestimos
+Content-Type: application/json
+
+{
+  "cliente": "Ana Costa",
+  "livro_id": 2,
+  "data_emprestimo": "2025-06-01"
+}
+
+###
+
+# TESTES - PUT
+
+# devolução válida
+PUT http://localhost:4004/api/emprestimos/10/devolucao
+
+###
+
+# empréstimo não existe
+PUT http://localhost:4004/api/emprestimos/999/devolucao
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/livros/{id} → remove livro do catálogo
+DELETE http://localhost:4004/api/livros/3
+
+###
+
+# livro emprestado
+DELETE http://localhost:4004/api/livros/2
+
+###
+
+# livro não existe
+DELETE http://localhost:4004/api/livros/999
