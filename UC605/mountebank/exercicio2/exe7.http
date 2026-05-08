@@ -1,0 +1,440 @@
+# Exe 7 - API de Gestão de Clientes e Pedidos
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4007,
+  "protocol": "http",
+  "name": "API_Clientes_Pedidos",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/clientes → lista todos os clientes → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/clientes"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"clientes\": [{\"id\": 1, \"nome\": \"João Silva\", \"email\": \"joao@email.com\"}, {\"id\": 2, \"nome\": \"Ana Costa\", \"email\": \"ana@email.com\"}, {\"id\": 3, \"nome\": \"Carlos Mendes\", \"email\": \"carlos@email.com\"}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/clientes → dados válidos → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/clientes"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"nome\"\\s*:\\s*\"[^\"]+\".*"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"email\"\\s*:\\s*\"[^\"]+\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Cliente adicionado com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/clientes/1/pedidos → lista pedidos do cliente existente → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/clientes/1/pedidos"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"pedidos\": [{\"id\": 10, \"produto\": \"Teclado\", \"quantidade\": 2, \"estado\": \"Enviado\"}, {\"id\": 11, \"produto\": \"Rato\", \"quantidade\": 1, \"estado\": \"Em processamento\"}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/clientes/999/pedidos → cliente não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/clientes/999/pedidos"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Cliente não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/pedidos → dados válidos, cliente existe, quantidade válida → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/pedidos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"cliente_id\"\\s*:\\s*1.*"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*[1-9][0-9]*.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Pedido criado com sucesso\", \"id\": 12, \"estado\": \"Em processamento\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/pedidos → cliente inexistente → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/pedidos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"cliente_id\"\\s*:\\s*999.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Cliente não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/pedidos → quantidade inválida (zero ou negativa) → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/pedidos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"quantidade\"\\s*:\\s*(-[0-9]+|0).*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Quantidade inválida\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/pedidos/11 → estado Em processamento → Enviado → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/pedidos/11"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"estado\"\\s*:\\s*\"Enviado\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Estado do pedido atualizado com sucesso\", \"id\": 11, \"estado\": \"Enviado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/pedidos/10 → estado Enviado → Entregue → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/pedidos/10"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"estado\"\\s*:\\s*\"Entregue\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Estado do pedido atualizado com sucesso\", \"id\": 10, \"estado\": \"Entregue\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/pedidos/999 → pedido não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/pedidos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Pedido não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/pedidos/11 → pedido Em processamento → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/pedidos/11"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Pedido cancelado com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/pedidos/10 → pedido já Enviado, não pode cancelar → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/pedidos/10"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Só é possível cancelar pedidos Em processamento\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/pedidos/999 → pedido não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/pedidos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Pedido não encontrado\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/clientes → lista clientes
+GET http://localhost:4007/api/clientes
+
+###
+
+# GET /api/clientes/{id}/pedidos → lista pedidos do cliente
+GET http://localhost:4007/api/clientes/1/pedidos
+
+###
+
+# cliente não existe → 404
+GET http://localhost:4007/api/clientes/999/pedidos
+
+###
+
+# TESTES - POST
+
+# POST /api/clientes → adiciona novo cliente
+POST http://localhost:4007/api/clientes
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "email": "pedro@email.com"
+}
+
+###
+
+# POST /api/pedidos → cria novo pedido
+POST http://localhost:4007/api/pedidos
+Content-Type: application/json
+
+{
+  "cliente_id": 1,
+  "produto": "Monitor",
+  "quantidade": 2
+}
+
+###
+
+# cliente inexistente → 404
+POST http://localhost:4007/api/pedidos
+Content-Type: application/json
+
+{
+  "cliente_id": 999,
+  "produto": "Monitor",
+  "quantidade": 2
+}
+
+###
+
+# quantidade inválida → 400
+POST http://localhost:4007/api/pedidos
+Content-Type: application/json
+
+{
+  "cliente_id": 1,
+  "produto": "Monitor",
+  "quantidade": -3
+}
+
+###
+
+# TESTES - PUT
+
+# PUT /api/pedidos/{id} → atualiza estado do pedido
+PUT http://localhost:4007/api/pedidos/11
+Content-Type: application/json
+
+{
+  "estado": "Enviado"
+}
+
+###
+
+# PUT /api/pedidos/{id} → atualiza estado do pedido
+PUT http://localhost:4007/api/pedidos/10
+Content-Type: application/json
+
+{
+  "estado": "Entregue"
+}
+
+###
+
+# pedido não existe → 404
+PUT http://localhost:4007/api/pedidos/999
+Content-Type: application/json
+
+{
+  "estado": "Enviado"
+}
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/pedidos/{id} → cancela o pedido
+DELETE http://localhost:4007/api/pedidos/11
+
+###
+
+# DELETE apenas permitido enquanto o pedido estiver “Em processamento”
+DELETE http://localhost:4007/api/pedidos/10
+
+###
+
+# pedido não existe → 404
+DELETE http://localhost:4007/api/pedidos/999

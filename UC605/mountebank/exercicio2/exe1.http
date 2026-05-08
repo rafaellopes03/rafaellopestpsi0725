@@ -1,0 +1,415 @@
+# Exe 1 - API Gestão de Alunos
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4001,
+  "protocol": "http",
+  "name": "API_Alunos",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/alunos → lista todos os alunos → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/alunos"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"alunos\": [{\"id\": 1, \"nome\": \"João Silva\", \"idade\": 20, \"curso\": \"Informatica\"}, {\"id\": 2, \"nome\": \"Ana Costa\", \"idade\": 17, \"curso\": \"Gestão\"}, {\"id\": 3, \"nome\": \"Carlos Mendes\", \"idade\": 22, \"curso\": \"Marketing\"}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/alunos/1 → aluno existe → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/alunos/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"id\": 1, \"nome\": \"João Silva\", \"idade\": 20, \"curso\": \"Informatica\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "GET /api/alunos/999 → aluno não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/alunos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Aluno não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/alunos → dados válidos (nome, idade >= 10, curso existe) → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/alunos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"nome\"\\s*:\\s*\"[^\"]+\".*\"idade\"\\s*:\\s*(1[0-9]|[2-9][0-9]|[1-9][0-9]{2,}).*\"curso\"\\s*:\\s*\"Informatica\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Aluno criado com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/alunos → idade inferior a 10 → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/alunos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"idade\"\\s*:\\s*[0-9]\\b.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Idade mínima não atingida\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/alunos → curso inexistente → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/alunos"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"curso\"\\s*:\\s*\"CursoInexistente\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Curso não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/alunos/1 → aluno existe, dados válidos → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/alunos/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"idade\"\\s*:\\s*(1[0-9]|[2-9][0-9]|[1-9][0-9]{2,}).*\"curso\"\\s*:\\s*\"Informatica\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Aluno atualizado com sucesso\", \"id\": 1}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/alunos/999 → aluno não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/alunos/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Aluno não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/alunos/1 → idade inferior a 10 → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/alunos/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"idade\"\\s*:\\s*[0-9]\\b.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Idade mínima não atingida\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/alunos/1 → curso inexistente → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/alunos/1"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"curso\"\\s*:\\s*\"CursoInexistente\".*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Curso não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/alunos/1 → utilizador com permissão de admin → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/alunos/1",
+            "headers": {
+              "Authorization": "Bearer admin-token"
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Aluno removido com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/alunos/1 → sem permissões de administração → 403 Forbidden",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/alunos/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 403,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Acesso negado. Permissões de administração necessárias.\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/alunos → lista todos os alunos
+GET http://localhost:4001/api/alunos
+
+###
+
+# GET /api/alunos/{id} → mostra dados de um aluno específico
+GET http://localhost:4001/api/alunos/1
+
+###
+
+# Aluno inexistente
+GET http://localhost:4001/api/alunos/999
+
+###
+
+# TESTES - POST
+
+# POST /api/alunos → adiciona um novo aluno
+POST http://localhost:4001/api/alunos
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "idade": 19,
+  "curso": "Informatica"
+}
+
+###
+
+# •	Idades inferiores a 10 → erro 400 (“Idade mínima não atingida”)
+POST http://localhost:4001/api/alunos
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "idade": 8,
+  "curso": "Informatica"
+}
+
+###
+
+# Curso inexistente
+POST http://localhost:4001/api/alunos
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "idade": 19,
+  "curso": "CursoInexistente"
+}
+
+###
+
+# TESTES - PUT
+
+# PUT /api/alunos/{id} → atualiza dados de um aluno existente
+PUT http://localhost:4001/api/alunos/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva Atualizado",
+  "idade": 21,
+  "curso": "Informatica"
+}
+
+###
+
+# Aluno não encontrado
+PUT http://localhost:4001/api/alunos/999
+Content-Type: application/json
+
+{
+  "nome": "Ninguém",
+  "idade": 21,
+  "curso": "Informatica"
+}
+
+###
+
+# Idade inferior a 10 → 400
+PUT http://localhost:4001/api/alunos/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "idade": 7,
+  "curso": "Informatica"
+}
+
+###
+
+# Curso inexistente
+PUT http://localhost:4001/api/alunos/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "idade": 21,
+  "curso": "CursoInexistente"
+}
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/alunos/{id} → remove um aluno como Admin
+DELETE http://localhost:4001/api/alunos/1
+Authorization: Bearer admin-token
+
+###
+
+# DELETE /api/alunos/{id} → remove um aluno sem permissões
+DELETE http://localhost:4001/api/alunos/1

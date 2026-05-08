@@ -1,0 +1,304 @@
+# Exe 5 - Gestão de Funcionários
+
+POST http://localhost:2525/imposters
+
+{
+  "port": 4005,
+  "protocol": "http",
+  "name": "API_Funcionarios",
+  "stubs": [
+
+    {
+      "_comentario": "GET /api/funcionarios → lista todos os funcionários → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "GET",
+            "path": "/api/funcionarios"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"funcionarios\": [{\"id\": 1, \"nome\": \"João Silva\", \"cargo\": \"Developer\", \"salario\": 1500, \"tarefas_pendentes\": false}, {\"id\": 2, \"nome\": \"Ana Costa\", \"cargo\": \"Designer\", \"salario\": 1200, \"tarefas_pendentes\": true}, {\"id\": 3, \"nome\": \"Carlos Mendes\", \"cargo\": \"Manager\", \"salario\": 2500, \"tarefas_pendentes\": false}]}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/funcionarios → dados válidos, salário >= 760 → 201 Created",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/funcionarios"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"salario\"\\s*:\\s*(7[6-9][0-9]|[89][0-9]{2}|[1-9][0-9]{3,}).*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 201,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Funcionário adicionado com sucesso\", \"id\": 4}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "POST /api/funcionarios → salário inferior a 760€ → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "POST",
+            "path": "/api/funcionarios"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"salario\"\\s*:\\s*([0-9]|[1-9][0-9]|[1-6][0-9]{2}|7[0-5][0-9])\\b.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Salário inferior ao mínimo permitido (760€)\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/funcionarios/1/salario → aumento válido, não desce abaixo do mínimo → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/funcionarios/1/salario"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"salario\"\\s*:\\s*(7[6-9][0-9]|[89][0-9]{2}|[1-9][0-9]{3,}).*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Salário atualizado com sucesso\", \"id\": 1, \"salario_atual\": 1800}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/funcionarios/1/salario → novo salário abaixo de 760€ → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/funcionarios/1/salario"
+          }
+        },
+        {
+          "matches": {
+            "body": ".*\"salario\"\\s*:\\s*([0-9]|[1-9][0-9]|[1-6][0-9]{2}|7[0-5][0-9])\\b.*"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Salário inferior ao mínimo permitido (760€)\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "PUT /api/funcionarios/999/salario → funcionário não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "PUT",
+            "path": "/api/funcionarios/999/salario"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Funcionário não encontrado\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/funcionarios/1 → sem tarefas pendentes → 200 OK",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/funcionarios/1"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"mensagem\": \"Funcionário removido com sucesso\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/funcionarios/2 → tem tarefas pendentes → 400",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/funcionarios/2"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 400,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Não é possível remover um funcionário com tarefas pendentes\"}"
+          }
+        }
+      ]
+    },
+
+    {
+      "_comentario": "DELETE /api/funcionarios/999 → funcionário não existe → 404",
+      "predicates": [
+        {
+          "equals": {
+            "method": "DELETE",
+            "path": "/api/funcionarios/999"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 404,
+            "headers": { "Content-Type": "application/json; charset=utf-8" },
+            "body": "{\"erro\": \"Funcionário não encontrado\"}"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+
+###
+
+# TESTES - GET
+
+# GET /api/funcionarios → lista todos os funcionários
+GET http://localhost:4005/api/funcionarios
+
+###
+
+# TESTES - POST
+
+# POST /api/funcionarios → adiciona novo funcionário
+POST http://localhost:4005/api/funcionarios
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "cargo": "Tester",
+  "salario": 900
+}
+
+###
+
+# salário inferior a 760€
+POST http://localhost:4005/api/funcionarios
+Content-Type: application/json
+
+{
+  "nome": "Pedro Ferreira",
+  "cargo": "Tester",
+  "salario": 500
+}
+
+###
+
+# TESTES - PUT
+
+# PUT /api/funcionarios/{id}/salario → altera o salário
+PUT http://localhost:4005/api/funcionarios/1/salario
+Content-Type: application/json
+
+{
+  "salario": 1800
+}
+
+###
+
+# novo salário abaixo de 760€
+PUT http://localhost:4005/api/funcionarios/1/salario
+Content-Type: application/json
+
+{
+  "salario": 600
+}
+
+###
+
+# funcionário não existe
+PUT http://localhost:4005/api/funcionarios/999/salario
+Content-Type: application/json
+
+{
+  "salario": 1000
+}
+
+###
+
+# TESTES - DELETE
+
+# DELETE /api/funcionarios/{id} → sem tarefas pendentes → 200
+# DELETE /api/funcionarios/{id} → remove funcionário sem tarefas pendentes
+DELETE http://localhost:4005/api/funcionarios/1
+
+###
+
+# DELETE /api/funcionarios/{id} → remove funcionário com tarefas pendentes
+DELETE http://localhost:4005/api/funcionarios/2
+
+###
+
+# funcionário não existe
+DELETE http://localhost:4005/api/funcionarios/999

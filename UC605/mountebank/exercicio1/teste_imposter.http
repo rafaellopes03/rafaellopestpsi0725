@@ -1,0 +1,179 @@
+# Teste imposter
+
+// Exercício 1
+// Stub: lista de marcas (GET /api/marcas)
+GET http://localhost:4546/api/marcas
+
+###
+
+// Exercício 2 
+// Stub: pesquisa de carros por marca (GET /api/cars?brand=Toyota)
+GET http://localhost:4546/api/cars?brand=Toyota
+
+###
+
+// Exercício 3
+// Stub: GET /api/cars sem parâmetros
+GET http://localhost:4546/api/cars
+
+###
+
+// Exercício 4
+// Stub: login bem-sucedido (POST /api/login com body exacto)
+POST http://localhost:4546/api/login
+Content-Type: application/json
+
+{"username":"admin","password":"secret"}
+
+###
+
+// Exercício 5
+// Stub: login com credenciais inválidas (POST /api/login genérico)
+POST http://localhost:4546/api/login
+Content-Type: application/json
+
+{"username":"admin","password":"1234"}
+
+###
+
+// Exercício 6
+// Stub: criar utilizador (email duplicado) (POST /api/users com email específico)
+POST http://localhost:4546/api/users
+Content-Type: application/json
+
+{"nome":"João Silver","email":"exists@example.com","idade":18}
+
+###
+
+// Exercício 7
+// Stub: criar utilizador com sucesso (POST /api/users)
+POST http://localhost:4546/api/users
+Content-Type: application/json
+
+{"nome":"Maria Costa","email":"maria@example.com","idade":25}
+
+###
+
+// Exercício 8
+// Stub: temperatura — campo obrigatório (POST /api/temperature sem field)
+POST http://localhost:4546/api/temperature
+Content-Type: application/json
+
+{"sensor_id":"sensor_01"}
+
+###
+
+// Exercício 9
+// Stub: temperatura — criação com field presente (POST /api/temperature com value)
+POST http://localhost:4546/api/temperature
+Content-Type: application/json
+
+{"sensor_id":"sensor_01","value":23.5}
+
+###
+
+// Exercício 10
+// Stub: tarefas duplicadas (POST /api/tasks com title "duplicate")
+POST http://localhost:4546/api/tasks
+Content-Type: application/json
+
+{"title":"duplicate","descricao":"Tarefa duplicada"}
+
+###
+
+// Exercício 11
+// Stub: criação de tarefa com sucesso (POST /api/tasks)
+POST http://localhost:4546/api/tasks
+Content-Type: application/json
+
+{"title":"Nova Tarefa","descricao":"Descrição da tarefa"}
+
+###
+
+// Exercício 12 (credenciais certas)
+// Stub: autenticação (POST /api/auth)
+POST http://localhost:4546/api/auth
+Content-Type: application/json
+
+{"username":"user1","password":"pass1"}
+
+###
+
+// Exercício 12 (credenciais erradas)
+POST http://localhost:4546/api/auth
+Content-Type: application/json
+
+{"username":"user1","password":"1234"}
+
+###
+
+// Exercício 13 (com token)
+GET http://localhost:4546/api/profile
+Authorization: Bearer validtoken
+
+###
+
+// Exercício 13 (sem token)
+GET http://localhost:4546/api/profile
+
+###
+
+// Exercício 13 (token inválido)
+GET http://localhost:4546/api/profile
+Authorization: Bearer tokeninvalido
+
+###
+
+// Exercício 14
+// Stub genérico para POST com Content-Type obrigatório
+POST http://localhost:4546/api/login
+
+{"username":"admin","password":"secret"}
+
+###
+
+// Exercício 15
+// Stub genérico para GET (fallback 404)
+GET http://localhost:4546/api/rota-que-nao-existe
+
+###
+
+// Testes de integração
+
+### 
+
+// Passo 1 - Login válido -> obter token
+POST http://localhost:4546/api/login
+Content-Type: application/json
+
+{"username":"admin","password":"secret"}
+
+###
+
+// Passo 2 - Aceder perfil com token obtido
+GET http://localhost:4546/api/profile
+Authorization: Bearer validtoken
+
+###
+
+// Passo 3 - Criar tarefa nova
+POST http://localhost:4546/api/tasks
+Content-Type: application/json
+
+{"title":"Tarefa do fluxo de integração","descricao":"Criada no teste de integração"}
+
+###
+
+// Passo 4 - Criar utilizador novo
+POST http://localhost:4546/api/users
+Content-Type: application/json
+
+{"nome":"Carlos Ferreira","email":"carlos@example.com","idade":35}
+
+###
+
+// Passo 5 - Tentar criar utilizador com email duplicado
+POST http://localhost:4546/api/users
+Content-Type: application/json
+
+{"nome":"Carlos Ferreira","email":"exists@example.com","idade":35}
